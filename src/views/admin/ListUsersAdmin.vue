@@ -4,8 +4,6 @@ import { apiClient } from "@/lib/axios";
 import { Users, UserCog, XCircle, Loader2, CheckCircle } from "lucide-vue-next";
 import type { User } from "@/types/models/user.type";
 
-const baseUrl = import.meta.env.VITE_API_URL;
-
 // ==================
 // STATE
 // ==================
