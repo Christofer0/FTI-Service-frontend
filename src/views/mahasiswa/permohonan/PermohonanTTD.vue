@@ -328,7 +328,7 @@
 
               <Button
                 type="submit"
-                :disabled="isSubmitting || !isFormValid"
+                :disabled="isSubmitting || !isFormValid || isSubmittedOnce"
                 class="flex-1 h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg uppercase text-sm tracking-wide shadow-sm border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span
@@ -507,6 +507,7 @@ const isDragOver = ref(false);
 const error = ref("");
 const success = ref("");
 const fieldErrors = ref<{ [key: string]: string }>({});
+const isSubmittedOnce = ref(false);
 
 // Computed properties
 const isFormValid = computed(() => {
@@ -652,6 +653,7 @@ const submitForm = async () => {
 
     console.log("✅ Permohonan berhasil:", res);
     success.value = "Permohonan berhasil diajukan!";
+    isSubmittedOnce.value = true;
 
     setTimeout(() => {
       router.push("/mahasiswa/dashboard");
