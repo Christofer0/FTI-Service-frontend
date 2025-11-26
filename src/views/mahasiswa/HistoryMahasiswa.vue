@@ -11,6 +11,7 @@ import {
   CheckCircle,
   FileCheck,
 } from "lucide-vue-next";
+import { router } from "@/routes";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -157,6 +158,25 @@ const getStatusLabel = (key: string) => {
     total: "Total Permohonan",
   };
   return labels[key] || key;
+};
+
+const openSignedFile = async (fileName: string) => {
+  try {
+    const url = `${baseUrl}/files/signed/${fileName}`;
+
+    const res = await fetch(url, { method: "HEAD" });
+
+    // Jika file ada → buka ke tab baru
+    if (res.ok) {
+      window.open(url, "_blank");
+      return;
+    }
+
+    // Jika file hilang / 404 → redirect
+    router.push({ name: "fileDeleted" });
+  } catch (err) {
+    router.push({ name: "fileDeleted" });
+  }
 };
 
 onMounted(async () => {
@@ -364,16 +384,13 @@ onMounted(async () => {
                   <td class="px-4 py-4">
                     <div class="flex justify-center">
                       <div v-if="item?.file_signed_path">
-                        <a
-                          :href="`${baseUrl}/files/signed/${item.file_signed_path}`"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title="Buka PDF"
+                        <button
+                          @click="openSignedFile(item.file_signed_path)"
                           class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition-colors"
                         >
                           <FileText class="w-4 h-4" />
                           Lihat PDF
-                        </a>
+                        </button>
                       </div>
                       <div v-else-if="item?.status_permohonan == 'ditolak'">
                         <span

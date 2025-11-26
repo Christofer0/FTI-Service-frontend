@@ -24,6 +24,78 @@
         </p>
       </div>
 
+      <!-- Expired Document -->
+      <div
+        v-else-if="isExpired && documentData"
+        class="bg-white rounded-xl shadow-xl overflow-hidden border border-amber-300"
+      >
+        <!-- HEADER -->
+        <div class="bg-amber-400 p-8 text-center text-white">
+          <h1 class="text-3xl font-bold mb-1 tracking-wide">
+            Document Expired
+          </h1>
+          <p class="text-amber-100">This document is no longer valid</p>
+
+          <!-- BADGE -->
+          <div class="mt-4 flex justify-center">
+            <span
+              class="inline-flex items-center px-4 py-1.5 bg-amber-100 text-amber-800 border border-amber-300 rounded-full text-sm font-medium shadow-sm"
+            >
+              <span
+                class="w-2 h-2 bg-amber-500 rounded-full mr-2 animate-ping"
+              ></span>
+              QR Code Expired
+            </span>
+          </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="p-8 space-y-6">
+          <!-- Expiration Details -->
+          <div
+            class="bg-amber-50 border border-amber-200 rounded-lg p-5 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-amber-900 mb-1">
+              Expiration Details
+            </h2>
+            <p class="text-amber-800 leading-relaxed">
+              This document was digitally signed on
+              <strong>{{ formatDate(documentData.signed_at) }}</strong> and has
+              exceeded the validity period of <strong>60 days</strong>.
+            </p>
+          </div>
+
+          <!-- Document ID -->
+          <div
+            class="bg-amber-50 border border-amber-200 rounded-lg p-5 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-amber-900 mb-2">Document ID</h2>
+            <p class="text-amber-950 font-semibold tracking-wide">
+              {{ documentData.permohonan_id }}
+            </p>
+          </div>
+
+          <!-- Student Name -->
+          <div
+            class="bg-amber-50 border border-amber-200 rounded-lg p-5 shadow-sm"
+          >
+            <h2 class="text-lg font-bold text-amber-900 mb-2">Student</h2>
+            <p class="text-amber-950 font-semibold tracking-wide">
+              {{ documentData.mahasiswa.nama }}
+            </p>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div
+          class="bg-amber-50 px-6 py-4 text-center border-t border-amber-200"
+        >
+          <p class="text-amber-900 text-sm font-medium">
+            Please request a new document if needed.
+          </p>
+        </div>
+      </div>
+
       <!-- Valid Document -->
       <div
         v-else-if="isValid && documentData"
@@ -271,35 +343,49 @@
 
           <!-- Verification Badge -->
           <div
-            class="bg-gradient-to-r from-emerald-600 to-green-600 rounded-lg p-6 text-center relative overflow-hidden"
+            class="relative rounded-xl p-6 text-center border border-emerald-500/30 shadow-xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 backdrop-blur-lg overflow-hidden"
           >
-            <div
-              class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"
-            ></div>
-            <div
-              class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"
-            ></div>
+            <!-- Floating glow effect -->
+            <div class="absolute inset-0">
+              <div
+                class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 blur-2xl rounded-full"
+              ></div>
+              <div
+                class="absolute bottom-0 left-0 w-24 h-24 bg-emerald-300/10 blur-xl rounded-full"
+              ></div>
+            </div>
+
             <div class="relative z-10">
-              <div class="flex items-center justify-center mb-3">
+              <!-- Icon + Title -->
+              <div class="flex items-center justify-center mb-4">
                 <svg
-                  class="w-8 h-8 text-yellow-300 mr-3"
+                  class="w-10 h-10 text-emerald-300 drop-shadow-lg"
                   fill="currentColor"
-                  viewBox="0 0 20 20"
+                  viewBox="0 0 24 24"
                 >
                   <path
-                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  ></path>
+                    d="M12 2l2.39 4.84 5.33.78-3.86 3.76.91 5.32L12 15.9l-4.77 2.5.91-5.32-3.86-3.76 5.33-.78L12 2z"
+                  />
                 </svg>
-                <span class="text-yellow-300 font-bold text-lg"
-                  >Official Verification</span
+                <span
+                  class="ml-3 text-emerald-100 font-extrabold text-xl tracking-wide"
                 >
+                  Verified Document
+                </span>
               </div>
-              <p class="text-white text-sm font-medium">
-                This document has been verified through the official digital
-                signature system
+
+              <!-- Description -->
+              <p class="text-emerald-50/90 text-sm font-medium leading-relaxed">
+                This document has been authenticated through the official
+                digital signature verification system.
               </p>
-              <p class="text-emerald-100 text-xs mt-2">
-                Verification ID: {{ documentData.permohonan_id }}
+
+              <!-- Verification ID -->
+              <p class="text-emerald-200 text-xs mt-3 tracking-wider">
+                Verification ID:
+                <span class="font-semibold">{{
+                  documentData.permohonan_id
+                }}</span>
               </p>
             </div>
           </div>
@@ -365,16 +451,31 @@ const loading = ref(true);
 const isValid = ref(false);
 const documentData = ref<any>(null);
 const errorMessage = ref("");
+const isExpired = ref(false);
 
 const verifyDocument = async () => {
   loading.value = true;
   try {
     const permohonanId = route.params.id;
     const response = await apiClient.get(`/verify/${permohonanId}`);
-
+    // if(response.data.success && response.data.data.status === "valid")
     if (response.data.success && response.data.data.status === "valid") {
       isValid.value = true;
       documentData.value = response.data.data;
+
+      // CEK EXPIRED 60 hari (2 bulan)
+      const signetAt = new Date(documentData.value.signed_at);
+      const now = new Date();
+
+      const diffDays =
+        (now.getTime() - signetAt.getTime()) / (1000 * 60 * 60 * 24);
+      console.log("perbedaan hari: ", diffDays);
+      // cek
+      if (diffDays > 60) {
+        isExpired.value = true;
+      } else {
+        isExpired.value = false;
+      }
     } else {
       isValid.value = false;
       errorMessage.value = response.data.message || "Document is not valid";

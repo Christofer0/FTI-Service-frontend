@@ -23,6 +23,12 @@ const routes = [
     meta: { requiresAuth: false, layout: "none" },
   },
   {
+    path: "/file-deleted",
+    name: "fileDeleted",
+    component: () => import("@/views/verify/FileDeleted.vue"),
+    meta: { requiresAuth: false, layout: "none" },
+  },
+  {
     path: "/admin",
     component: () => import("@/layouts/AdminLayouts.vue"),
     children: admin_routes,
