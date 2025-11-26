@@ -11,6 +11,7 @@ import {
   CheckCircle,
   FileCheck,
 } from "lucide-vue-next";
+import { router } from "@/routes";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -157,6 +158,25 @@ const getStatusLabel = (key: string) => {
     total: "Total Permohonan",
   };
   return labels[key] || key;
+};
+
+const openSignedFile = async (fileName: string) => {
+  try {
+    const url = `${baseUrl}/files/signed/${fileName}`;
+
+    const res = await fetch(url, { method: "HEAD" });
+
+    if (res.ok) {
+      // file masih ada → buka PDF
+      window.open(url, "_blank");
+      return;
+    }
+
+    // file hilang / expired
+    router.push({ name: "fileDeleted" });
+  } catch (err) {
+    router.push({ name: "fileDeleted" });
+  }
 };
 
 onMounted(async () => {
@@ -352,15 +372,15 @@ onMounted(async () => {
                       </span>
                     </td>
                     <td class="px-4 py-4 text-center">
-                      <a
+                      <Button
                         v-if="item?.file_signed_path"
-                        :href="`${baseUrl}/files/signed/${item.file_signed_path}`"
-                        target="_blank"
+                        @click="openSignedFile(item.file_signed_path)"
                         class="inline-flex items-center gap-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md transition-colors"
                       >
                         <FileText class="w-4 h-4" />
                         Lihat PDF
-                      </a>
+                      </Button>
+
                       <span v-else class="text-xs text-gray-500 font-medium">
                         Tidak Ada
                       </span>

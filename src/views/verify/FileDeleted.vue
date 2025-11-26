@@ -8,8 +8,16 @@
       >
         <!-- Header -->
         <div
-          class="bg-gradient-to-r from-red-600 to-orange-500 p-8 text-center text-white relative"
+          class="relative bg-gradient-to-r from-red-600 to-orange-500 p-8 text-center text-white"
         >
+          <!-- BUTTON KEMBALI -->
+          <button
+            @click="$router.back()"
+            class="absolute left-4 top-4 flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition"
+          >
+            ← Kembali
+          </button>
+
           <div
             class="absolute -top-10 right-0 w-28 h-28 bg-white/10 rounded-full blur-xl"
           ></div>
