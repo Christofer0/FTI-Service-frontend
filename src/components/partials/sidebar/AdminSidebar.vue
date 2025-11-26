@@ -178,13 +178,30 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
+import Swal from "sweetalert2";
 import { useRouter } from "vue-router";
 
 const auth = useAuthStore();
 const router = useRouter();
 
 function handleLogout() {
-  auth.logout();
-  router.push({ name: "Login" });
+  Swal.fire({
+    title: "Keluar dari Sistem?",
+    text: "Anda yakin ingin logout sekarang?",
+    icon: "warning",
+    iconColor: "#ef4444",
+    background: "rgba(255,255,255,0.95)",
+    color: "#1f2937",
+    showCancelButton: true,
+    confirmButtonText: "Ya, Logout",
+    cancelButtonText: "Batal",
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#9ca3af",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      auth.logout();
+      router.push({ name: "Login" });
+    }
+  });
 }
 </script>
