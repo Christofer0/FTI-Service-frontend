@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white/95 backdrop-blur-sm border-r border-gray-100 flex flex-col"
+    class="bg-white/95 backdrop-blur-sm border-r border-gray-100 flex flex-col h-full"
   >
     <!-- Navigasi Utama -->
     <div class="mt-6 px-6 space-y-2 overflow-y-auto">
@@ -114,7 +114,9 @@
     </div>
 
     <!-- Logout menempel di bawah -->
-    <div class="px-6 py-6 border-t border-gray-100 mt-auto">
+    <div
+      class="px-6 py-6 border-t border-gray-100 sticky bottom-0 bg-white/95 backdrop-blur-sm"
+    >
       <button
         @click="handleLogout"
         class="group w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-600 hover:text-red-700 transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md"

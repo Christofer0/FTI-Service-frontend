@@ -1,10 +1,11 @@
 <template>
   <div
-    class="bg-white/95 backdrop-blur-sm border-r border-gray-100 flex flex-col"
+    class="bg-white/95 backdrop-blur-sm border-r border-gray-100 flex flex-col h-full"
   >
     <!-- Bagian menu yang di-scroll -->
-    <div class="mt-6 px-6 overflow-y-auto">
+    <div class="mt-6 px-6 overflow-y-auto flex-1">
       <div class="space-y-2">
+        <!-- Dashboard -->
         <RouterLink
           to="/mahasiswa/dashboard"
           class="group flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
@@ -27,11 +28,12 @@
               />
             </svg>
           </div>
-          <span class="font-medium text-gray-700 group-hover:text-gray-900"
-            >Dashboard</span
-          >
+          <span class="font-medium text-gray-700 group-hover:text-gray-900">
+            Dashboard
+          </span>
         </RouterLink>
 
+        <!-- Profile -->
         <RouterLink
           to="/mahasiswa/profile"
           class="group flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
@@ -54,11 +56,12 @@
               />
             </svg>
           </div>
-          <span class="font-medium text-gray-700 group-hover:text-gray-900"
-            >Profile</span
-          >
+          <span class="font-medium text-gray-700 group-hover:text-gray-900">
+            Profile
+          </span>
         </RouterLink>
 
+        <!-- History -->
         <RouterLink
           to="/mahasiswa/history"
           class="group flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-200 hover:scale-[1.02]"
@@ -81,17 +84,19 @@
               />
             </svg>
           </div>
-          <span class="font-medium text-gray-700 group-hover:text-gray-900"
-            >History</span
-          >
+          <span class="font-medium text-gray-700 group-hover:text-gray-900">
+            History
+          </span>
         </RouterLink>
 
         <div class="h-4"></div>
       </div>
     </div>
 
-    <!-- Logout menempel di bawah menu -->
-    <div class="px-6 py-6 border-t border-gray-100 mt-auto">
+    <!-- Logout menempel di bawah -->
+    <div
+      class="px-6 py-6 border-t border-gray-100 sticky bottom-0 bg-white/95 backdrop-blur-sm"
+    >
       <button
         @click="handleLogout"
         class="group w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 text-red-600 hover:text-red-700 transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow-md"

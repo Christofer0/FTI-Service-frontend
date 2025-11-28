@@ -21,7 +21,7 @@ const toggleSidebar = () => {
     <div class="flex flex-1 pt-16">
       <MahasiswaSidebar
         :class="[
-          'fixed top-16 h-[calc(100vh-4rem)] w-64 border-r transition-transform duration-300 ease-in-out z-40',
+          'fixed top-0 left-0 h-screen w-64 border-r transition-transform duration-300 ease-in-out z-40 pt-16',
           {
             'translate-x-0': isSidebarOpen,
             '-translate-x-full': !isSidebarOpen,
