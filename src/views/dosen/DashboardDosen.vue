@@ -3,20 +3,26 @@
     <div class="max-w-7xl mx-auto space-y-6">
       <!-- Header -->
       <Card class="border-l-4 border-green-600 shadow-sm bg-white">
-        <CardContent class="p-6 flex justify-between items-center">
-          <div>
+        <CardContent
+          class="p-6 flex flex-wrap justify-between items-start gap-4"
+        >
+          <div class="flex-1 min-w-[200px]">
             <h1 class="text-2xl font-bold text-gray-900">
               {{ getGreeting() }}, {{ user?.nama }}
             </h1>
-            <p class="text-sm text-gray-600 font-medium">
-              Dashboard Dosen • Sistem Informasi Akademik FTI UKSW
-            </p>
+            <p class="text-sm text-gray-600 font-medium">Dashboard Dosen</p>
           </div>
-          <div class="text-right">
+
+          <!-- Bagian kanan -->
+          <div class="text-right min-w-[120px]">
             <p class="text-xs text-gray-500 uppercase font-semibold">
               {{ currentDate }}
             </p>
-            <p class="text-xl font-bold text-gray-900">{{ currentTime }}</p>
+
+            <!-- Jam hanya tampil mulai ukuran sm ke atas -->
+            <p class="text-xl font-bold text-gray-900 hidden sm:block">
+              {{ currentTime }}
+            </p>
           </div>
         </CardContent>
       </Card>

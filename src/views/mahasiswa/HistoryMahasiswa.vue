@@ -200,26 +200,27 @@ onMounted(async () => {
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <div
           v-for="(value, key) in visibleCounts"
           :key="key"
           @click="selectStatus(key)"
-          class="cursor-pointer bg-white border-2 shadow-sm hover:shadow-md rounded-lg p-5 transition-all duration-200"
+          class="cursor-pointer bg-white border-2 shadow-sm hover:shadow-md rounded-lg p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between h-full"
           :class="{
             'border-blue-600 shadow-md': selectedStatus === key,
             'border-gray-200 hover:border-gray-300': selectedStatus !== key,
           }"
         >
-          <div class="flex items-start justify-between">
-            <div class="flex-1">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex-1 min-w-0">
               <p
-                class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                class="text-[10px] sm:text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 truncate"
               >
                 {{ getStatusLabel(key) }}
               </p>
+
               <p
-                class="text-3xl font-bold"
+                class="text-2xl sm:text-3xl font-bold leading-tight"
                 :class="
                   selectedStatus === key ? 'text-blue-600' : 'text-gray-900'
                 "
@@ -227,10 +228,15 @@ onMounted(async () => {
                 {{ value }}
               </p>
             </div>
-            <div class="p-3 rounded-lg" :class="cardConfig[key]?.bgColor">
+
+            <!-- ICON LEBIH AMAN DI MOBILE -->
+            <div
+              class="p-2 sm:p-3 rounded-lg flex items-center justify-center shrink-0"
+              :class="cardConfig[key]?.bgColor"
+            >
               <component
                 :is="cardConfig[key]?.icon"
-                class="w-6 h-6"
+                class="w-5 h-5 sm:w-6 sm:h-6"
                 :class="cardConfig[key]?.iconColor"
               />
             </div>

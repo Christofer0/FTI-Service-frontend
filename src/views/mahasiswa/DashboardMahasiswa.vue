@@ -4,45 +4,32 @@
       <!-- Welcome Header -->
       <Card class="border-l-4 border-blue-600 shadow-sm bg-white">
         <CardContent class="p-6">
-          <div class="flex items-center justify-between">
-            <div class="space-y-1">
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center"
-                >
-                  <svg
-                    class="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    ></path>
-                  </svg>
-                </div>
-                <div>
-                  <h1 class="text-2xl font-bold text-gray-900">
-                    {{ getGreeting() }}, {{ user?.nama }}
-                  </h1>
-                  <p class="text-sm text-gray-600 font-medium">
-                    Sistem Informasi Akademik FTI UKSW
-                  </p>
-                </div>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <!-- Kiri: Icon + Greeting -->
+            <div class="flex items-center gap-3 flex-1 min-w-[230px]">
+              <div>
+                <h1 class="text-2xl font-bold text-gray-900">
+                  {{ getGreeting() }}, {{ user?.nama }}
+                </h1>
+                <p class="text-sm text-gray-600 font-medium">
+                  Sistem Informasi Akademik FTI UKSW
+                </p>
               </div>
             </div>
 
-            <!-- Current Time -->
-            <div class="text-right">
+            <!-- Kanan: Date + Time -->
+            <div class="text-right min-w-[120px]">
+              <!-- Date always shown -->
               <p
                 class="text-xs text-gray-500 uppercase tracking-wide font-semibold"
               >
                 {{ currentDate }}
               </p>
-              <p class="text-xl text-gray-900 font-bold">{{ currentTime }}</p>
+
+              <!-- Time hidden on mobile -->
+              <p class="text-xl text-gray-900 font-bold hidden sm:block">
+                {{ currentTime }}
+              </p>
             </div>
           </div>
         </CardContent>

@@ -13,9 +13,15 @@
     >
       <div class="flex items-center gap-3">
         <input type="checkbox" checked disabled class="w-5 h-5" />
-        <span class="font-semibold"
-          >{{ selectedIds.size }} permohonan dipilih</span
-        >
+        <span class="font-semibold">
+          {{ selectedIds.size }} permohonan dipilih
+          <span
+            v-if="selectedIds.size >= MAX_BATCH_SIZE"
+            class="ml-2 px-2 py-1 bg-yellow-500 text-white text-xs rounded-full"
+          >
+            MAKSIMAL
+          </span>
+        </span>
       </div>
       <div class="flex gap-2">
         <button
@@ -30,8 +36,29 @@
           class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-2"
         >
           <span v-if="isBatchProcessing">⏳ Memproses...</span>
-          <span v-else>✍️ Tandatangani Semua</span>
+          <span v-else>✍️ Tandatangani Semua ({{ selectedIds.size }})</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Warning: Limit Reached -->
+    <div
+      v-if="selectedIds.size >= MAX_BATCH_SIZE"
+      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg mb-4 shadow-sm"
+    >
+      <div class="flex items-start gap-3">
+        <span class="text-2xl">⚠️</span>
+        <div>
+          <p class="font-semibold text-yellow-800 mb-1">
+            Batas Maksimal Tercapai
+          </p>
+          <p class="text-sm text-yellow-700">
+            Anda telah memilih
+            <strong>{{ selectedIds.size }} permohonan</strong> (maksimal
+            {{ MAX_BATCH_SIZE }}). Untuk performa optimal server, silakan proses
+            dalam beberapa batch.
+          </p>
+        </div>
       </div>
     </div>
 
@@ -55,20 +82,23 @@
         />
       </div>
       <p class="text-xs text-gray-500 mt-2">
-        Mohon tunggu, proses sedang berjalan...
+        ⏱️ Estimasi waktu: ~{{ estimatedTime }} menit. Mohon tunggu...
       </p>
     </div>
 
     <!-- Filter -->
-    <div class="flex items-center gap-3 mb-6 bg-white p-3 rounded-lg shadow-sm">
-      <label for="jenis" class="text-gray-700 font-medium"
-        >Filter Jenis Permohonan:</label
-      >
+    <div
+      class="flex flex-wrap items-center gap-3 mb-6 bg-white p-3 rounded-lg shadow-sm"
+    >
+      <label for="jenis" class="text-gray-700 font-medium w-full sm:w-auto">
+        Filter Jenis Permohonan:
+      </label>
+
       <select
         id="jenis"
         v-model="selectedJenis"
         @change="fetchPermohonan"
-        class="border border-indigo-200 focus:ring-2 focus:ring-indigo-400 px-3 py-2 rounded-lg outline-none"
+        class="border border-indigo-200 focus:ring-2 focus:ring-indigo-400 px-3 py-2 rounded-lg outline-none w-full sm:w-auto"
       >
         <option value="">Semua</option>
         <option
@@ -84,10 +114,10 @@
     <!-- Info Box -->
     <div class="mt-4 mb-5 bg-blue-50 border border-blue-200 rounded-lg p-4">
       <p class="text-sm text-blue-800">
-        <strong>💡 Tips:</strong> Centang permohonan yang ingin ditandatangani,
-        lalu klik tombol
-        <span class="font-semibold">"Tandatangani Semua"</span> untuk proses
-        batch. Hanya permohonan dengan status
+        <strong>💡 Tips:</strong> Centang permohonan yang ingin ditandatangani
+        (maksimal <strong>{{ MAX_BATCH_SIZE }} permohonan</strong>), lalu klik
+        tombol <span class="font-semibold">"Tandatangani Semua"</span> untuk
+        proses batch. Hanya permohonan dengan status
         <span class="font-semibold">Menunggu</span> atau
         <span class="font-semibold">Disetujui</span> yang dapat ditandatangani.
       </p>
@@ -107,7 +137,7 @@
                 @change="toggleSelectAll"
                 :disabled="signablePermohonan.length === 0"
                 class="w-5 h-5 cursor-pointer"
-                title="Pilih semua yang dapat ditandatangani"
+                title="Pilih semua (maks 50)"
               />
             </th>
             <th class="p-3 border">No</th>
@@ -137,7 +167,17 @@
                 type="checkbox"
                 :checked="selectedIds.has(permohonan.id)"
                 @change="toggleSelect(permohonan.id)"
-                class="w-5 h-5 cursor-pointer"
+                :disabled="
+                  !selectedIds.has(permohonan.id) &&
+                  selectedIds.size >= MAX_BATCH_SIZE
+                "
+                :title="
+                  !selectedIds.has(permohonan.id) &&
+                  selectedIds.size >= MAX_BATCH_SIZE
+                    ? 'Batas maksimal 50 tercapai'
+                    : 'Pilih untuk batch sign'
+                "
+                class="w-5 h-5 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
               />
             </td>
 
@@ -260,6 +300,7 @@ interface BatchSignResult {
   success: Array<{ id: number; judul: string }>;
   failed: Array<{ id: number; reason: string }>;
   total: number;
+  processing_time?: number;
 }
 
 export default {
@@ -274,6 +315,9 @@ export default {
     const selectedIds = ref<Set<number>>(new Set());
     const isBatchProcessing = ref(false);
 
+    // LIMIT CONSTANTS
+    const MAX_BATCH_SIZE = 50; // ← LIMIT 50 PERMOHONAN
+
     const baseUrl = import.meta.env.VITE_API_URL;
 
     // Computed
@@ -285,10 +329,19 @@ export default {
 
     const isAllSignableSelected = computed(() => {
       const signableIds = signablePermohonan.value.map((p) => p.id);
+      const availableCount = Math.min(signableIds.length, MAX_BATCH_SIZE);
       return (
-        signableIds.length > 0 &&
-        signableIds.every((id) => selectedIds.value.has(id))
+        availableCount > 0 &&
+        signableIds
+          .slice(0, availableCount)
+          .every((id) => selectedIds.value.has(id))
       );
+    });
+
+    const estimatedTime = computed(() => {
+      // Estimasi: 10 detik per permohonan
+      const seconds = selectedIds.value.size * 10;
+      return Math.ceil(seconds / 60);
     });
 
     // Methods
@@ -314,20 +367,47 @@ export default {
 
     const toggleSelect = (id: number) => {
       const newSelected = new Set(selectedIds.value);
+
       if (newSelected.has(id)) {
+        // Always allow deselect
         newSelected.delete(id);
       } else {
+        // Check limit before adding
+        if (newSelected.size >= MAX_BATCH_SIZE) {
+          Swal.fire({
+            title: "Batas Maksimal Tercapai",
+            html: `Anda hanya dapat memilih maksimal <strong>${MAX_BATCH_SIZE} permohonan</strong> per batch.<br><br>Untuk menandatangani lebih banyak, silakan proses dalam beberapa batch.`,
+            icon: "warning",
+            confirmButtonColor: "#3b82f6",
+          });
+          return;
+        }
         newSelected.add(id);
       }
+
       selectedIds.value = newSelected;
     };
 
     const toggleSelectAll = () => {
       const signableIds = signablePermohonan.value.map((p) => p.id);
+
       if (isAllSignableSelected.value) {
+        // Deselect all
         selectedIds.value = new Set();
       } else {
-        selectedIds.value = new Set(signableIds);
+        // Select up to MAX_BATCH_SIZE
+        const idsToSelect = signableIds.slice(0, MAX_BATCH_SIZE);
+        selectedIds.value = new Set(idsToSelect);
+
+        // Show warning if there are more than MAX_BATCH_SIZE
+        if (signableIds.length > MAX_BATCH_SIZE) {
+          Swal.fire({
+            title: "Pilihan Dibatasi",
+            html: `Terdapat <strong>${signableIds.length} permohonan</strong> yang dapat ditandatangani.<br><br>Hanya <strong>${MAX_BATCH_SIZE} pertama</strong> yang dipilih (batas maksimal).<br><br>Silakan proses sisanya di batch berikutnya.`,
+            icon: "info",
+            confirmButtonColor: "#3b82f6",
+          });
+        }
       }
     };
 
@@ -349,9 +429,20 @@ export default {
         return;
       }
 
+      // Estimate time
+      const estimatedMinutes = Math.ceil((selectedIds.value.size * 10) / 60);
+
       const result = await Swal.fire({
         title: "Tandatangani Batch?",
-        html: `Anda akan menandatangani <strong>${selectedIds.value.size} permohonan</strong> sekaligus.<br><br>Proses ini mungkin memakan waktu beberapa saat. Lanjutkan?`,
+        html: `
+          <div style="text-align: center;">
+            <p>Anda akan menandatangani <strong style="color:#10b981;">${selectedIds.value.size} permohonan</strong> sekaligus.</p>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+              ⏱️ Estimasi waktu: <strong>~${estimatedMinutes} menit</strong>
+            </p>
+            <p style="margin-top: 15px;">Lanjutkan?</p>
+          </div>
+        `,
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Ya, Tandatangani Semua",
@@ -371,26 +462,40 @@ export default {
 
         if (response.data.success) {
           const data = response.data.data as BatchSignResult;
-          const { success, failed } = data;
+          const { success, failed, processing_time } = data;
+
+          const timeInMinutes = processing_time
+            ? Math.ceil(processing_time / 60)
+            : estimatedMinutes;
+
           let resultHtml = `
-  <div style="text-align: center;">
-    <p><strong style="color:#10b981;">✅ Berhasil:</strong> ${success.length} permohonan</p>
-`;
+            <div style="text-align: center;">
+              <p><strong style="color:#10b981;">✅ Berhasil:</strong> ${success.length} permohonan</p>
+          `;
 
           if (failed.length > 0) {
             resultHtml += `
-    <p><strong style="color:#ef4444;">❌ Gagal:</strong> ${failed.length} permohonan</p>
-    <ul style="margin-top:10px;font-size:0.9em;color:#666;text-align:left;max-height:200px;overflow-y:auto;">
-  `;
+              <p><strong style="color:#ef4444;">❌ Gagal:</strong> ${failed.length} permohonan</p>
+              <details style="margin-top:15px;text-align:left;">
+                <summary style="cursor:pointer;color:#3b82f6;font-weight:600;">
+                  Lihat detail kegagalan
+                </summary>
+                <ul style="margin-top:10px;font-size:0.9em;color:#666;max-height:200px;overflow-y:auto;padding-left:20px;">
+            `;
 
             failed.forEach((item: any) => {
               resultHtml += `<li style="margin-bottom: 8px;"><strong>ID ${item.id}:</strong> ${item.reason}</li>`;
             });
 
-            resultHtml += `</ul>`;
+            resultHtml += `</ul></details>`;
           }
 
-          resultHtml += `</div>`;
+          resultHtml += `
+              <p style="margin-top: 15px; color: #666; font-size: 0.85em;">
+                ⏱️ Waktu proses: ${timeInMinutes} menit
+              </p>
+            </div>
+          `;
 
           await Swal.fire({
             title: "Batch Signing Selesai!",
@@ -539,9 +644,11 @@ export default {
       signingPermohonan,
       selectedIds,
       isBatchProcessing,
+      MAX_BATCH_SIZE,
       baseUrl,
       signablePermohonan,
       isAllSignableSelected,
+      estimatedTime,
       fetchPermohonan,
       toggleSelect,
       toggleSelectAll,

@@ -89,9 +89,7 @@
                       <p class="font-semibold text-gray-900 text-sm">
                         Klik untuk upload atau drag & drop
                       </p>
-                      <p class="text-xs text-gray-600 mt-1">
-                        PDF, DOC, DOCX, JPG, PNG (Max 10MB)
-                      </p>
+                      <p class="text-xs text-gray-600 mt-1">PDF (Max 2MB)</p>
                     </div>
                   </div>
 
@@ -562,8 +560,7 @@ const validateFile = (file: File) => {
   }
 
   if (!allowedTypes.includes(file.type)) {
-    fieldErrors.value.file =
-      "Format file tidak didukung. Gunakan PDF, DOC, DOCX, JPG, atau PNG";
+    fieldErrors.value.file = "Format file tidak didukung. Gunakan PDF";
     selectedFile.value = null;
     return false;
   }
