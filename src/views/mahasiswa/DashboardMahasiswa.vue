@@ -346,9 +346,7 @@
                   <SelectTrigger
                     class="h-12 rounded-lg border-2 border-gray-300 focus:border-blue-600 bg-white font-medium"
                   >
-                    <SelectValue
-                      placeholder="Pilih jenis surat yang dibutuhkan..."
-                    />
+                    <SelectValue placeholder="Pilih jenis surat" />
                   </SelectTrigger>
                   <SelectContent
                     class="rounded-lg border-2 border-gray-200 shadow-lg"
