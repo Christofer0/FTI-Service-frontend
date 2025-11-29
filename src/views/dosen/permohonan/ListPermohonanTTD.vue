@@ -9,31 +9,35 @@
     <!-- Batch Actions Bar -->
     <div
       v-if="selectedIds.size > 0"
-      class="bg-indigo-600 text-white p-4 rounded-lg mb-4 flex items-center justify-between shadow-lg animate-pulse"
+      class="bg-indigo-600 text-white p-4 rounded-lg mb-4 shadow-lg animate-pulse flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
     >
+      <!-- Left section -->
       <div class="flex items-center gap-3">
         <input type="checkbox" checked disabled class="w-5 h-5" />
-        <span class="font-semibold">
+        <span class="font-semibold text-sm sm:text-base">
           {{ selectedIds.size }} permohonan dipilih
           <span
             v-if="selectedIds.size >= MAX_BATCH_SIZE"
-            class="ml-2 px-2 py-1 bg-yellow-500 text-white text-xs rounded-full"
+            class="ml-2 px-2 py-1 bg-yellow-500 text-white text-[10px] sm:text-xs rounded-full"
           >
             MAKSIMAL
           </span>
         </span>
       </div>
-      <div class="flex gap-2">
+
+      <!-- Right buttons -->
+      <div class="flex flex-col gap-2 sm:flex-row">
         <button
           @click="clearSelection"
-          class="bg-white text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all font-medium"
+          class="bg-white text-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-50 transition-all font-medium text-sm sm:text-base"
         >
           Batal Pilih
         </button>
+
         <button
           @click="handleBatchSign"
           :disabled="isBatchProcessing"
-          class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all font-medium flex items-center gap-2"
+          class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
         >
           <span v-if="isBatchProcessing">⏳ Memproses...</span>
           <span v-else>✍️ Tandatangani Semua ({{ selectedIds.size }})</span>

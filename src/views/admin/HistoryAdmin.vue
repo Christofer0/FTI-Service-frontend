@@ -178,7 +178,7 @@ onMounted(async () => {
       </div>
 
       <!-- Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
           v-for="(value, key) in visibleCounts"
           :key="key"
@@ -189,15 +189,15 @@ onMounted(async () => {
             'border-slate-200 hover:border-slate-300': selectedStatus !== key,
           }"
         >
-          <div class="flex items-start justify-between">
-            <div class="flex-1">
+          <div class="flex items-start justify-between min-w-0">
+            <div class="flex-1 min-w-0">
               <p
                 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2"
               >
                 {{ getStatusLabel(key) }}
               </p>
               <p
-                class="text-3xl font-bold"
+                class="text-3xl font-bold truncate"
                 :class="
                   selectedStatus === key ? 'text-indigo-500' : 'text-slate-900'
                 "
@@ -205,10 +205,14 @@ onMounted(async () => {
                 {{ value }}
               </p>
             </div>
-            <div class="p-3 rounded-lg" :class="cardConfig[key]?.bgColor">
+
+            <div
+              class="p-2 rounded-lg shrink-0 flex items-center justify-center"
+              :class="cardConfig[key]?.bgColor"
+            >
               <component
                 :is="cardConfig[key]?.icon || FileText"
-                class="w-6 h-6"
+                class="w-6 h-6 shrink-0"
                 :class="cardConfig[key]?.iconColor || 'text-slate-400'"
               />
             </div>

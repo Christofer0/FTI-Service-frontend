@@ -54,14 +54,14 @@
 
             <td class="px-5 py-3">
               <div class="font-semibold text-gray-900">
-                {{ item.mahasiswa?.user?.nama }} -
+                {{
+                  item.mahasiswa?.user?.nama.split(" ").slice(0, 3).join(" ")
+                }}
+                -
                 <span class="text-ts text-gray-500 leading-sung">{{
                   item.mahasiswa?.user?.nomor_induk
                 }}</span>
               </div>
-              <!-- <div class="text-xs text-gray-500 leading-snug">
-                {{ item.mahasiswa?.user?.nomor_induk }}
-              </div> -->
             </td>
 
             <td class="px-5 py-3">
