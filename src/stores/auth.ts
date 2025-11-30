@@ -1,18 +1,21 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type { User, DosenData } from "@/types/models/user.type";
 
 export const useAuthStore = defineStore(
   "auth",
   () => {
-    // state
-    const user = ref<User | null>(null); // data dasar
+    // STATE
+    const user = ref<User | null>(null);
     const dosen = ref<DosenData | null>(null);
 
     const access_token = ref<string | null>(null);
     const refresh_token = ref<string | null>(null);
 
-    // actions
+    // GETTERS
+    const isLoggedIn = computed(() => !!access_token.value);
+
+    // ACTIONS
     function setUser(newUser: User) {
       user.value = newUser;
     }
@@ -29,6 +32,11 @@ export const useAuthStore = defineStore(
       refresh_token.value = newtoken;
     }
 
+    function saveTokens(access: string, refresh?: string) {
+      access_token.value = access;
+      if (refresh) refresh_token.value = refresh;
+    }
+
     function logout() {
       user.value = null;
       dosen.value = null;
@@ -43,15 +51,17 @@ export const useAuthStore = defineStore(
       access_token,
       refresh_token,
 
+      // getters
+      isLoggedIn,
+
       // actions
       setUser,
       setDosen,
       setAccessToken,
       setRefreshToken,
+      saveTokens,
       logout,
     };
   },
-  {
-    persist: true,
-  }
+  { persist: true }
 );
