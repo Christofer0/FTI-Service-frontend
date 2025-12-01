@@ -6,7 +6,7 @@
       class="text-3xl font-bold mb-6 text-gray-900 border-b-4 border-orange-500 pb-2 flex items-center gap-2"
     >
       📋 Daftar Permohonan Tanda Tangan
-      <span class="text-sm font-normal text-gray-600">(Read-Only)</span>
+      <!-- <span class="text-sm font-normal text-gray-600">(Read-Only)</span> -->
     </h1>
 
     <div v-if="loading" class="flex justify-center items-center py-10">
@@ -92,7 +92,7 @@
                 target="_blank"
                 class="text-orange-600 hover:text-orange-700 hover:underline font-semibold"
               >
-                {{ item.file_name || "Lihat File" }}
+                {{ item.file_name?.substring(0.18) || "Lihat File" }}
               </a>
               <span v-else class="text-gray-400 italic">-</span>
             </td>
@@ -156,13 +156,20 @@ const fetchPermohonan = async () => {
   }
 };
 
-const formatDate = (dateStr?: string) => {
-  if (!dateStr) return "-";
-  return new Date(dateStr).toLocaleString("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+
+  // tambah 7 jam (dalam milidetik)
+  date.setHours(date.getHours() + 7);
+
+  return date.toLocaleString("id-ID", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
-};
+}
 
 const getStatusClass = (status: string) => {
   switch (status) {

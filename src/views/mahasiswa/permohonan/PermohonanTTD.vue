@@ -543,7 +543,7 @@ const handleFileDrop = (e: DragEvent) => {
 };
 
 const validateFile = (file: File) => {
-  const maxSize = 10 * 1024 * 1024; // 10MB
+  const maxSize = 2 * 1024 * 1024; // 10MB
   const allowedTypes = [
     "application/pdf",
     "application/msword",
@@ -554,7 +554,7 @@ const validateFile = (file: File) => {
   ];
 
   if (file.size > maxSize) {
-    fieldErrors.value.file = "Ukuran file tidak boleh lebih dari 10MB";
+    fieldErrors.value.file = "Ukuran file tidak boleh lebih dari 2MB";
     selectedFile.value = null;
     return false;
   }
