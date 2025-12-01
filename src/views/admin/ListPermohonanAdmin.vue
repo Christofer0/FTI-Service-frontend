@@ -92,7 +92,7 @@
                 target="_blank"
                 class="text-orange-600 hover:text-orange-700 hover:underline font-semibold"
               >
-                {{ item.file_name?.substring(0.18) || "Lihat File" }}
+                {{ item.file_name?.substring(0, 18) || "Lihat File" }}
               </a>
               <span v-else class="text-gray-400 italic">-</span>
             </td>
