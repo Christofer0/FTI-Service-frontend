@@ -18,3 +18,7 @@ export const createPermohonan = async (data: {
 
   return res.data;
 };
+export const getJenisPermohonanById = async (id: number) => {
+  const res = await apiClient.get(`/jenis-permohonan/${id}`);
+  return res.data;
+};

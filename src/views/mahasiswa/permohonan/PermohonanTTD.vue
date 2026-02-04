@@ -495,9 +495,15 @@ const router = useRouter();
 const dosenList = ref<Dosen[]>([]);
 const selectedDosen = ref<string>("");
 const selectedFile = ref<File | null>(null);
-const judul = ref("Permohonan Tanda Tangan");
+const judul = ref("");
 const deskripsi = ref("");
-const jenisPermohonan = ref<number>(1);
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+
+const jenisPermohonan = ref<number | null>(null);
+
+// const jenisPermohonan = ref<number>(1);
 
 // UI state
 const isSubmitting = ref(false);
@@ -639,10 +645,15 @@ const submitForm = async () => {
 
   try {
     isSubmitting.value = true;
+    console.log("ini jenis", jenisPermohonan.value);
+    if (jenisPermohonan.value === null) {
+      error.value = "Jenis permohonan belum ditentukan.";
+      return;
+    }
 
     const res = await createPermohonan({
       id_dosen: selectedDosen.value,
-      id_jenis_permohonan: jenisPermohonan.value,
+      id_jenis_permohonan: jenisPermohonan.value, // AMAN
       judul: judul.value.trim(),
       deskripsi: deskripsi.value.trim(),
       file: selectedFile.value || undefined,
@@ -690,10 +701,44 @@ watch(
     error.value = "";
     success.value = "";
   },
-  { deep: true }
+  { deep: true },
 );
 
-onMounted(fetchDosen);
+type JenisPermohonan = {
+  id: number;
+  nama_jenis_permohonan: string;
+  deskripsi?: string;
+};
+
+const jenisDetail = ref<JenisPermohonan | null>(null);
+
+import { getJenisPermohonanById } from "@/services/permohonanService";
+
+const fetchJenisPermohonan = async (id: number) => {
+  try {
+    const res = await getJenisPermohonanById(id);
+    jenisDetail.value = res.data;
+
+    // 🔥 ini kuncinya
+    judul.value = res.data.nama_jenis_permohonan;
+  } catch (err) {
+    error.value = "Gagal memuat jenis permohonan.";
+  }
+};
+
+onMounted(() => {
+  const id = Number(route.params.jenisId);
+
+  if (!id || isNaN(id)) {
+    error.value = "Jenis permohonan tidak valid.";
+    return;
+  }
+
+  jenisPermohonan.value = id;
+
+  fetchJenisPermohonan(id); // 🔥
+  fetchDosen();
+});
 </script>
 
 <style scoped>

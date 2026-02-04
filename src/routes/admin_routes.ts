@@ -17,6 +17,10 @@ const routes = [
     component: () => import("@/views/admin/ListPermohonanAdmin.vue"),
   },
   {
+    path: "jenis-permohonan",
+    component: () => import("@/views/admin/JenisPermohonanAdmin.vue"),
+  },
+  {
     path: "history",
     component: () => import("@/views/admin/HistoryAdmin.vue"),
   },
