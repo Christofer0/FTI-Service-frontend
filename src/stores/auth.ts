@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { User, DosenData } from "@/types/models/user.type";
+import type { User, DosenData, MahasiswaData } from "@/types/models/user.type";
 
 export const useAuthStore = defineStore(
   "auth",
@@ -8,6 +8,7 @@ export const useAuthStore = defineStore(
     // STATE
     const user = ref<User | null>(null);
     const dosen = ref<DosenData | null>(null);
+    const mahasiswa = ref<MahasiswaData | null>(null);
 
     const access_token = ref<string | null>(null);
     const refresh_token = ref<string | null>(null);
@@ -22,6 +23,10 @@ export const useAuthStore = defineStore(
 
     function setDosen(newDosen: DosenData | null) {
       dosen.value = newDosen;
+    }
+
+    function setMahasiswa(newMahasiswa: MahasiswaData | null) {
+      mahasiswa.value = newMahasiswa;
     }
 
     function setAccessToken(newtoken: string) {
@@ -57,11 +62,12 @@ export const useAuthStore = defineStore(
       // actions
       setUser,
       setDosen,
+      setMahasiswa,
       setAccessToken,
       setRefreshToken,
       saveTokens,
       logout,
     };
   },
-  { persist: true }
+  { persist: true },
 );

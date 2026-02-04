@@ -53,12 +53,72 @@
           </div>
         </transition>
 
-        <!-- Google Sign-In -->
-        <div class="flex justify-center mb-6">
-          <div
-            id="googleSignInButton"
-            class="transform transition-transform hover:scale-105"
-          ></div>
+        <!-- Manual Login -->
+        <form @submit.prevent="handleManualLogin" class="w-full space-y-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              NIM / Nomor Induk
+            </label>
+            <input
+              v-model="manualLogin.nomor_induk"
+              type="text"
+              placeholder="7219xxxx"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <input
+              v-model="manualLogin.password"
+              type="password"
+              placeholder="••••••••"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 rounded-lg transition duration-200 disabled:bg-gray-400"
+          >
+            <span v-if="loading">Memproses...</span>
+            <span v-else>Login</span>
+          </button>
+        </form>
+
+        <!-- Register Hint -->
+        <div class="text-center text-sm text-gray-500 mb-6">
+          Belum punya akun?
+          <RouterLink
+            to="/register"
+            class="font-medium text-blue-600 hover:text-blue-700 hover:underline transition"
+          >
+            Daftar
+          </RouterLink>
+        </div>
+
+        <!-- Alternative Login -->
+        <div class="w-full">
+          <div class="relative flex items-center mb-4">
+            <div class="flex-grow border-t border-gray-200"></div>
+            <span class="mx-3 text-xs text-gray-400 bg-white px-2">
+              login dengan
+            </span>
+            <div class="flex-grow border-t border-gray-200"></div>
+          </div>
+
+          <!-- Google Sign-In -->
+          <div class="flex justify-center">
+            <div
+              id="googleSignInButton"
+              class="transform transition-transform hover:scale-105"
+            ></div>
+          </div>
         </div>
 
         <!-- Loading Spinner -->
@@ -183,6 +243,19 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
+              Password <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="formData.password"
+              type="password"
+              placeholder="Minimal 6 karakter"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+              minlength="6"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Nomor HP <span class="text-red-500">*</span>
             </label>
             <input
@@ -295,6 +368,20 @@
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
+              Password <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="formData.password"
+              type="password"
+              placeholder="Minimal 6 karakter"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+              minlength="6"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
               Nomor HP <span class="text-red-500">*</span>
             </label>
             <input
@@ -401,6 +488,20 @@
               placeholder="1234567890"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Password <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="formData.password"
+              type="password"
+              placeholder="Minimal 6 karakter"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+              minlength="6"
             />
           </div>
 
@@ -580,6 +681,7 @@ interface ProfileData {
 interface FormData {
   semester: number;
   no_hp: string;
+  password: string;
 }
 
 interface GoogleCallbackResponse {
@@ -602,13 +704,16 @@ const profileData = ref<ProfileData | null>(null);
 const formData = ref<FormData>({
   semester: 1,
   no_hp: "",
+  password: "",
 });
 const formDataAdmin = ref({
   nomor_induk: "",
   no_hp: "",
+  password: "",
 });
 const formDataDosen = ref({
   nomor_induk: "",
+  password: "",
   no_hp: "",
   gelar_depan: "",
   gelar_belakang: "",
@@ -652,7 +757,7 @@ onMounted(() => {
           size: "large",
           text: "signin_with",
           width: "350",
-        }
+        },
       );
     }
   };
@@ -755,7 +860,8 @@ const handleCompleteProfileMahasiswa = async () => {
         token: profileData.value?.token,
         semester: parseInt(formData.value.semester.toString()),
         no_hp: formData.value.no_hp,
-      }
+        password: formData.value.password,
+      },
     );
 
     const data = res.data;
@@ -839,12 +945,12 @@ const handleCompleteProfileDosen = async () => {
     formDataToSend.append("gelar_depan", formDataDosen.value.gelar_depan || "");
     formDataToSend.append(
       "gelar_belakang",
-      formDataDosen.value.gelar_belakang || ""
+      formDataDosen.value.gelar_belakang || "",
     );
     formDataToSend.append("jabatan", formDataDosen.value.jabatan || "");
     formDataToSend.append(
       "fakultas_id",
-      formDataDosen.value.fakultas_id.toString()
+      formDataDosen.value.fakultas_id.toString(),
     );
 
     // ✅ UPDATED: Kirim final blob dari editor
@@ -853,7 +959,7 @@ const handleCompleteProfileDosen = async () => {
       const signatureFileToSend = new File(
         [signatureFinalBlob.value],
         `signature_${Date.now()}.png`,
-        { type: "image/png" }
+        { type: "image/png" },
       );
       formDataToSend.append("signature", signatureFileToSend);
     }
@@ -865,7 +971,7 @@ const handleCompleteProfileDosen = async () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     const data = res.data;
@@ -891,6 +997,60 @@ const handleCompleteProfileDosen = async () => {
     error.value =
       err.response?.data?.message ||
       "Terjadi kesalahan saat menyimpan profil dosen.";
+    console.error(err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+// LOGIN MANUAL
+
+const manualLogin = ref({
+  nomor_induk: "",
+  password: "",
+});
+
+const handleManualLogin = async () => {
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const res = await apiClient.post("/auth_manual/login", {
+      nomor_induk: manualLogin.value.nomor_induk,
+      password: manualLogin.value.password,
+    });
+
+    const data = res.data;
+
+    if (data.success) {
+      localStorage.setItem("access_token", data.data.access_token);
+      localStorage.setItem("refresh_token", data.data.refresh_token);
+      localStorage.setItem("user", JSON.stringify(data.data.user));
+
+      authStore.setAccessToken(data.data.access_token);
+      authStore.setRefreshToken(data.data.refresh_token);
+      authStore.setUser(data.data.user);
+
+      if (data.data.user.role === "dosen" && data.data.dosen) {
+        authStore.setDosen(data.data.dosen);
+      }
+
+      step.value = "success";
+
+      const routes: Record<string, string> = {
+        admin: "/admin/dashboard",
+        dosen: "/dosen/dashboard",
+        mahasiswa: "/mahasiswa/dashboard",
+      };
+
+      setTimeout(() => {
+        router.push(routes[data.data.user.role] || "/dashboard");
+      }, 1500);
+    } else {
+      error.value = data.message || "Login gagal";
+    }
+  } catch (err: any) {
+    error.value = err.response?.data?.message || "NIM atau password salah.";
     console.error(err);
   } finally {
     loading.value = false;
