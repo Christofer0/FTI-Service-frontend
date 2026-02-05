@@ -371,7 +371,7 @@
               Password <span class="text-red-500">*</span>
             </label>
             <input
-              v-model="formData.password"
+              v-model="formDataAdmin.password"
               type="password"
               placeholder="Minimal 6 karakter"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -496,7 +496,7 @@
               Password <span class="text-red-500">*</span>
             </label>
             <input
-              v-model="formData.password"
+              v-model="formDataDosen.password"
               type="password"
               placeholder="Minimal 6 karakter"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -903,6 +903,7 @@ const handleCompleteProfileAdmin = async () => {
       token: profileData.value?.token,
       nomor_induk: formDataAdmin.value.nomor_induk,
       no_hp: formDataAdmin.value.no_hp,
+      password: formDataAdmin.value.password,
     });
 
     const data = res.data;
@@ -941,6 +942,7 @@ const handleCompleteProfileDosen = async () => {
     const formDataToSend = new FormData();
     formDataToSend.append("token", profileData.value?.token || "");
     formDataToSend.append("nomor_induk", formDataDosen.value.nomor_induk);
+    formDataToSend.append("password", formDataDosen.value.password);
     formDataToSend.append("no_hp", formDataDosen.value.no_hp);
     formDataToSend.append("gelar_depan", formDataDosen.value.gelar_depan || "");
     formDataToSend.append(

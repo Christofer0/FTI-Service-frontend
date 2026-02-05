@@ -18,7 +18,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // ===========================
@@ -41,6 +41,16 @@ apiClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const authStore = useAuthStore();
+
+    const isAuthEndpoint =
+      error.config?.url?.includes("/auth_manual/login") ||
+      error.config?.url?.includes("/auth/google/login") ||
+      error.config?.url?.includes("/auth/google/complete-profile") ||
+      error.config?.url?.includes("/auth/refresh");
+
+    if (isAuthEndpoint) {
+      return Promise.reject(error);
+    }
 
     // Jika bukan 401 → langsung lempar error
     if (!error.response || error.response.status !== 401) {
@@ -90,7 +100,7 @@ apiClient.interceptors.response.use(
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
-        }
+        },
       );
 
       const newAccessToken = res.data.data.access_token;
@@ -117,5 +127,5 @@ apiClient.interceptors.response.use(
     } finally {
       isRefreshing = false;
     }
-  }
+  },
 );

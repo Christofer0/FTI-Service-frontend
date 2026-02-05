@@ -115,7 +115,163 @@
         </footer>
       </div>
 
-      <!-- Step 2: Complete Profile - Mahasiswa -->
+      <!-- Step 2: Verify OTP -->
+      <div v-else-if="step === 'verify-otp'" class="space-y-6">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div
+            class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          >
+            <svg
+              class="w-10 h-10 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+
+          <h1 class="text-3xl font-bold text-gray-900 mb-2 tracking-tight">
+            Verifikasi Email 📧
+          </h1>
+          <p class="text-gray-600 text-sm">
+            Kode OTP telah dikirim ke<br />
+            <span class="font-semibold">{{ profileData?.email }}</span>
+          </p>
+        </div>
+
+        <!-- Error Alert -->
+        <transition name="fade">
+          <div
+            v-if="error"
+            class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3"
+          >
+            <svg
+              class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p class="text-sm text-red-800">{{ error }}</p>
+          </div>
+        </transition>
+
+        <!-- OTP Form -->
+        <form @submit.prevent="handleVerifyOTP" class="space-y-4">
+          <div>
+            <label
+              class="block text-sm font-medium text-gray-700 mb-2 text-center"
+            >
+              Masukkan Kode OTP
+            </label>
+            <input
+              v-model="otpForm.otp_code"
+              type="text"
+              maxlength="6"
+              placeholder="000000"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl font-mono tracking-widest"
+              required
+            />
+            <p class="mt-2 text-xs text-gray-500 text-center">
+              Masukkan 6 digit kode yang dikirim ke email Anda
+            </p>
+          </div>
+
+          <!-- Timer -->
+          <div class="text-center text-sm">
+            <p v-if="otpTimer > 0" class="text-gray-600">
+              ⏱️ Kode berlaku selama:
+              <span class="font-semibold">{{ formatTime(otpTimer) }}</span>
+            </p>
+            <p v-else class="text-red-600">⚠️ Kode OTP telah kadaluarsa</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="space-y-3">
+            <button
+              type="submit"
+              :disabled="loading || otpForm.otp_code.length !== 6"
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200 disabled:bg-gray-400 flex items-center justify-center gap-2"
+            >
+              <svg
+                v-if="loading"
+                class="w-5 h-5 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <span v-if="loading">Memverifikasi...</span>
+              <span v-else>Verifikasi</span>
+            </button>
+
+            <!-- Resend OTP -->
+            <button
+              type="button"
+              @click="handleResendOTP"
+              :disabled="!canResendOTP || loading"
+              class="w-full text-blue-600 hover:text-blue-700 font-medium py-2 rounded-lg transition duration-200 disabled:text-gray-400 disabled:cursor-not-allowed"
+            >
+              <span v-if="canResendOTP">🔄 Kirim Ulang Kode OTP</span>
+              <span v-else
+                >Tunggu {{ formatTime(otpTimer) }} untuk kirim ulang</span
+              >
+            </button>
+
+            <!-- Back Button -->
+            <button
+              type="button"
+              @click="handleBackToEmail"
+              class="w-full text-gray-600 hover:text-gray-700 font-medium py-2 rounded-lg transition duration-200"
+            >
+              ← Kembali ke Email
+            </button>
+          </div>
+        </form>
+
+        <!-- Info -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p class="text-sm text-blue-800">
+            💡 <strong>Tips:</strong><br />
+            • Periksa folder spam jika tidak menerima email<br />
+            • Kode OTP berlaku selama 10 menit<br />
+            • Jangan bagikan kode ini kepada siapa pun
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-gray-400 text-xs text-center">
+          © {{ new Date().getFullYear() }} FTI-Service<br />
+          Fakultas Teknologi Informasi UKSW
+        </footer>
+      </div>
+
+      <!-- Step 3: Complete Profile - Mahasiswa -->
       <div
         v-else-if="
           step === 'complete-profile' && profileData?.role === 'mahasiswa'
@@ -247,7 +403,7 @@
           <div class="flex gap-3">
             <button
               type="button"
-              @click="step = 'check-email'"
+              @click="handleBackToEmail"
               class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 rounded-lg transition duration-200"
             >
               Kembali
@@ -284,7 +440,7 @@
         </form>
       </div>
 
-      <!-- Step 2: Complete Profile - Admin -->
+      <!-- Step 3: Complete Profile - Admin -->
       <div
         v-else-if="step === 'complete-profile' && profileData?.role === 'admin'"
         class="space-y-6"
@@ -403,7 +559,7 @@
           <div class="flex gap-3">
             <button
               type="button"
-              @click="step = 'check-email'"
+              @click="handleBackToEmail"
               class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 rounded-lg transition duration-200"
             >
               Kembali
@@ -440,7 +596,7 @@
         </form>
       </div>
 
-      <!-- Step 2: Complete Profile - Dosen -->
+      <!-- Step 3: Complete Profile - Dosen -->
       <div
         v-else-if="step === 'complete-profile' && profileData?.role === 'dosen'"
         class="space-y-6 max-h-[80vh] overflow-y-auto"
@@ -617,7 +773,7 @@
           <div class="flex gap-3">
             <button
               type="button"
-              @click="step = 'check-email'"
+              @click="handleBackToEmail"
               class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 rounded-lg transition duration-200"
             >
               Kembali
@@ -654,7 +810,7 @@
         </form>
       </div>
 
-      <!-- Step 3: Success -->
+      <!-- Step 4: Success -->
       <div v-else-if="step === 'success'" class="text-center space-y-4 py-8">
         <div
           class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto"
@@ -701,7 +857,7 @@
 
 <script setup lang="ts">
 import { apiClient } from "@/lib/axios";
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import SignatureCreator from "@/components/dosen/SignatureCreator.vue";
@@ -716,6 +872,8 @@ interface ProfileData {
   prodi_id?: number;
   fakultas_id?: number;
   email: string;
+  otp_sent?: boolean;
+  otp_verified?: boolean;
 }
 
 // =========================
@@ -727,7 +885,9 @@ const authStore = useAuthStore();
 // =========================
 // State
 // =========================
-const step = ref<"check-email" | "complete-profile" | "success">("check-email");
+const step = ref<"check-email" | "verify-otp" | "complete-profile" | "success">(
+  "check-email",
+);
 const loading = ref(false);
 const error = ref("");
 const profileData = ref<ProfileData | null>(null);
@@ -736,6 +896,16 @@ const profileData = ref<ProfileData | null>(null);
 const emailForm = ref({
   email: "",
 });
+
+// OTP form
+const otpForm = ref({
+  otp_code: "",
+});
+
+// Timer for resend OTP
+const otpTimer = ref(0);
+const canResendOTP = ref(false);
+let timerInterval: number | null = null;
 
 // Mahasiswa form
 const mahasiswaForm = ref({
@@ -781,23 +951,140 @@ const handleCheckEmail = async () => {
 
     const data = res.data;
 
-    if (data.success && data.data.needs_profile) {
+    console.log("📧 Check Email Response:", data);
+
+    if (data.success && data.data.otp_sent) {
+      // OTP sent, move to verify step
       profileData.value = data.data;
-      step.value = "complete-profile";
+      step.value = "verify-otp";
+      startOTPTimer();
+      console.log("✅ OTP terkirim, pindah ke step verify-otp");
     } else {
       error.value = data.message || "Gagal memeriksa email";
     }
   } catch (err: any) {
     error.value =
       err.response?.data?.message || "Terjadi kesalahan. Silakan coba lagi.";
-    console.error(err);
+    console.error("❌ Error:", err);
   } finally {
     loading.value = false;
   }
 };
 
 // =========================
-// Step 2: Register Mahasiswa
+// Step 2: Verify OTP
+// =========================
+const handleVerifyOTP = async () => {
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const res = await apiClient.post("/auth_manual/register/verify-otp", {
+      email: profileData.value?.email,
+      otp_code: otpForm.value.otp_code,
+    });
+
+    const data = res.data;
+
+    console.log("📧 Verify OTP Response:", data);
+
+    if (data.success && data.data.otp_verified) {
+      // ✅ PERBAIKAN: Langsung assign data baru, tidak merge
+      profileData.value = data.data;
+      step.value = "complete-profile";
+
+      // Clear timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+
+      console.log("✅ OTP terverifikasi");
+      console.log("Profile data:", profileData.value);
+      console.log("Prodi ID:", profileData.value?.prodi_id);
+      console.log("Fakultas ID:", profileData.value?.fakultas_id);
+    } else {
+      error.value = data.message || "Kode OTP salah";
+    }
+  } catch (err: any) {
+    error.value = err.response?.data?.message || "Gagal memverifikasi OTP";
+    console.error("❌ Error:", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleResendOTP = async () => {
+  if (!canResendOTP.value) return;
+
+  loading.value = true;
+  error.value = "";
+
+  try {
+    const res = await apiClient.post("/auth_manual/register/resend-otp", {
+      email: profileData.value?.email,
+    });
+
+    const data = res.data;
+
+    if (data.success) {
+      // Reset timer
+      startOTPTimer();
+      otpForm.value.otp_code = "";
+      console.log("✅ OTP dikirim ulang");
+    }
+  } catch (err: any) {
+    error.value = err.response?.data?.message || "Gagal mengirim ulang OTP";
+    console.error("❌ Error:", err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const startOTPTimer = () => {
+  // Clear existing interval if any
+  if (timerInterval) {
+    clearInterval(timerInterval);
+  }
+
+  otpTimer.value = 600; // 10 minutes in seconds
+  canResendOTP.value = false;
+
+  timerInterval = window.setInterval(() => {
+    otpTimer.value--;
+
+    if (otpTimer.value <= 0) {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      canResendOTP.value = true;
+    }
+  }, 1000);
+};
+
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
+
+const handleBackToEmail = () => {
+  step.value = "check-email";
+  error.value = "";
+  otpForm.value.otp_code = "";
+
+  // Clear timer
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  otpTimer.value = 0;
+  canResendOTP.value = false;
+};
+
+// =========================
+// Step 3: Register Mahasiswa
 // =========================
 const handleRegisterMahasiswa = async () => {
   loading.value = true;
@@ -850,7 +1137,7 @@ const handleRegisterMahasiswa = async () => {
 };
 
 // =========================
-// Step 2: Register Admin
+// Step 3: Register Admin
 // =========================
 const handleRegisterAdmin = async () => {
   loading.value = true;
@@ -897,7 +1184,7 @@ const handleRegisterAdmin = async () => {
 };
 
 // =========================
-// Step 2: Register Dosen
+// Step 3: Register Dosen
 // =========================
 const handleRegisterDosen = async () => {
   loading.value = true;
@@ -971,6 +1258,16 @@ const handleRegisterDosen = async () => {
     loading.value = false;
   }
 };
+
+// =========================
+// Cleanup
+// =========================
+onBeforeUnmount(() => {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+});
 </script>
 
 <style scoped>
