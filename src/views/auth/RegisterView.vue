@@ -101,7 +101,7 @@
         <div class="text-center text-sm text-gray-500">
           Sudah punya akun?
           <RouterLink
-            to="/login"
+            to="/"
             class="font-medium text-blue-600 hover:text-blue-700 hover:underline transition"
           >
             Login
